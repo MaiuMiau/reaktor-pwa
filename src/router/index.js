@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Emissions from '@/components/Emissions'
+import Form from '@/components/Form'
 
 Vue.use(Router)
 
@@ -9,8 +10,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Emissions',
-      component: Emissions
+      name: 'Form',
+      component: Form
     }
   ]
 })
