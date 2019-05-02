@@ -6,13 +6,6 @@
 
       <b-form @submit.stop.prevent="onSubmit()"  >
         <label name="form"></label>
-        <!-- <b-form-input
-          id="input-1"
-          v-model="form.country"
-          type="text"
-          required
-          placeholder="Enter Country">
-        </b-form-input> -->
         <div>
           <b-form-select  v-model="form.country" :options="options" class="mb-3">
              <option value="" disabled selected>Select a country</option>
@@ -20,11 +13,6 @@
           <div class="mt-3">Selected: <strong>{{ form.country }}</strong></div>
         </div>
           <br>
-          <div>
-            <b-form-select  v-model="form.year" :options="options2" class="mb-3">
-               <option value="" disabled selected>Select a year</option>
-            </b-form-select>
-          </div>
           <b-form-checkbox
                 id="checkbox-1"
                 v-model="form.perCapita"
@@ -33,23 +21,16 @@
                 unchecked-value="dontshow"
           >
                 Emissions per capita
-  </b-form-checkbox>
+          </b-form-checkbox>
           <br>
           <b-button type="submit" variant="dark">Get emissions</b-button>
-          <!--<b-button type="button" @click="getData"> get emissions</b-button> -->
       </b-form>
       <br>
     </div>
+    <div v-if="emissions != '' ">
+      <b-table striped hover :items="emissions" :fields="fields"></b-table>
+    </div>
     </b-container>
-    <div v-if="emissions[2] != '' ">
-    <h4> {{ emissions[1] }} Co2Emissions in {{ emissions[0] }} are {{ emissions[2] }} kilotons </h4>
-</div>
-  <div v-if="emissions.length > 3 ">
-    <h5 >{{ emissions[3] }} kilotons per capita</h5>
-    </div>
-    <div v-if="emissions[2] == '' ">
-    <p > No information avalable for selected year</p>
-    </div>
   </div>
 </template>
 
@@ -68,7 +49,8 @@ export default {
     },
     options: [],
     options2: [],
-    selected: null
+    selected: null,
+     fields: ['year', 'emission'],
   }
 },
 created () {

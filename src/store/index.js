@@ -25,7 +25,7 @@ const store = {
   loadEmissions ({ commit }, formData ) {
     alert(formData)
     axios.post('http://localhost:5000/getemissions', formData ).then((response) => {
-      commit(SET_EMISSIONS, {emissions:response.data.data})
+      commit(SET_EMISSIONS, {emissions:response.data.results})
     })
   }
 
