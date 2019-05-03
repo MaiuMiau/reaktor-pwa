@@ -43,14 +43,12 @@ export default {
   data () {
   return {
     form: {
-      country: "",
-      year: "",
-      perCapita: "dontshow"
+      country: ""
     },
     options: [],
-    options2: [],
     selected: null,
-     fields: ['year', 'emission'],
+    fields: ['year', 'emission', 'percapita'],
+    perCapita: "dontshow"
   }
 },
 created () {
@@ -64,7 +62,7 @@ created () {
         axios.get('http://localhost:5000/getcountries')
           .then((res) => {
             this.options= res.data.countries;
-            this.options2= res.data.years[0];
+
 
           })
           .catch((error) => {
