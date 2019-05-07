@@ -10,7 +10,7 @@ const SET_EMISSIONS = 'SET_EMISSIONS'
 const store = {
   state: function () {
     let baseState = {
-      emissions: []
+      emissions: {}
     }
     return baseState
   },
@@ -24,7 +24,7 @@ const store = {
   actions: {
   loadEmissions ({ commit }, formData ) {
     axios.post('http://localhost:5000/getemissions', formData ).then((response) => {
-      commit(SET_EMISSIONS, {emissions:response.data.results})
+      commit(SET_EMISSIONS, {emissions:response.data})
     })
   }
 

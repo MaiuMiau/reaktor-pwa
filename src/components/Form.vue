@@ -22,19 +22,25 @@
         </div>
 
         <div v-if="emissions != '' ">
-          <b-table bordered small responsive :items="emissions" :fields="fields"></b-table>
+          <b-table bordered small responsive :items="emissions.results" :fields="fields"></b-table>
         </div>
+          <Bar v-bind:propsdata="this.emissions.emissons" v-bind:propsdata2="this.emissions.years" />
     </div>
+
     </b-container>
   </div>
 </template>
 
 
 <script>
+import Bar from './Bar.vue'
 import { mapGetters } from 'vuex'
 import axios from 'axios';
 export default {
   name: 'Form',
+  components: {
+    Bar
+  },
   data () {
   return {
     form: {
@@ -43,7 +49,10 @@ export default {
     options: [],
     selected: null,
     fields: ['year', 'emission'],
-    percapita: null
+    percapita: null,
+     emissionstable:[],
+    // countries:[],
+    // emissiondatas:[]
 
   }
 },
@@ -68,7 +77,7 @@ created () {
   methods:{
   onSubmit: function(){
         this.$store.dispatch('loadEmissions', this.form ).then(() => {
-          this.clearCountry()
+        this.clearCountry()
         })
       },
   clearCountry () {
@@ -95,7 +104,7 @@ created () {
 .formcontainer{
   height: 100%;
   width: 100%;
-  max-width: 500px;
+  max-width: 800px;
   min-width: 100px;
   display: inline-block;
   border-radius: 5px;
