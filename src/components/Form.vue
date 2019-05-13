@@ -2,31 +2,39 @@
   <div>
     <b-container >
       <h1>Co2 Emissions</h1>
-      <div class="formcontainer">
+      <div class="bigcontainer">
+        <div class="formcontainer">
+          <b-form @submit.stop.prevent="onSubmit()"  >
+            <label name="form"></label>
+            <div>
+              <b-form-input placeholder="Enter or Search Country" v-model="form.country" list="my-list-id"></b-form-input>
+               <datalist id="my-list-id">
+                   <option v-for="country in options">{{ country  }}</option>
+               </datalist>
+            </div>
+              <br>
+              <b-button type="submit" variant="dark">Get emissions</b-button>
+                <div class="mt-3" v-if="countryname != '' ">Results for: <h2>{{ countryname }}</h2></div>
 
-        <b-form @submit.stop.prevent="onSubmit()"  >
-          <label name="form"></label>
-          <div>
-            <b-form-input placeholder="Enter or Search Country" v-model="form.country" list="my-list-id"></b-form-input>
-             <datalist id="my-list-id">
-                 <option v-for="country in options">{{ country  }}</option>
-             </datalist>
-            <div class="mt-3">Selected: <strong>{{ form.country }}</strong></div>
-          </div>
-            <br>
-            <b-button type="submit" variant="dark">Get emissions</b-button>
-        </b-form>
+                <div id="check_capita" class="checkbox">
+                  <label><input type="checkbox" v-model="tableorchart" > Show results in chart</label>
+                </div>
+          </b-form>
         <br>
-        <div id="check_capita" class="checkbox">
-          <label><input type="checkbox" v-model="percapita" >Per capita</label>
         </div>
+      </div>
 
-        <div v-if="emissions != '' ">
-          <b-table bordered small responsive :items="emissions.results" :fields="fields"></b-table>
+        <div class="bigcontainer" v-if="countryData !='' && tableorchart != true">
+          <div class="formcontainer">
+            <label><input type="checkbox" v-model="percapita" > Show results per capita</label>
+            <b-table bordered small responsive fixed hover :items="countryData" :fields="fields" ></b-table>
+          </div>
         </div>
-          <Bar v-bind:propsdata="this.emissions.emissons" v-bind:propsdata2="this.emissions.years" />
-    </div>
-
+        <div class="bigcontainer" v-if="countryData !='' && tableorchart == true">
+          <div class="chartcontainer">
+            <Bar v-bind:propsdata="years" v-bind:propsdata2="emissions" />
+          </div>
+        </div>
     </b-container>
   </div>
 </template>
@@ -48,12 +56,10 @@ export default {
     },
     options: [],
     selected: null,
-    fields: ['year', 'emission'],
+    fields: [{key: 'year', sortable: true}, {key: 'emission', sortable: true}],
     percapita: null,
-     emissionstable:[],
-    // countries:[],
-    // emissiondatas:[]
-
+    tableorchart: false,
+    countryname:""
   }
 },
 // if checkbox is checked emissions will change to percapita
@@ -61,11 +67,11 @@ watch: {
    percapita: function () {
      if (this.percapita == true) {
        this.fields.pop()
-       this.fields.push('percapita');
+       this.fields.push({key: 'percapita', sortable: true});
      }
      else if (this.percapita == false){
        this.fields.pop()
-       this.fields.push('emission');
+       this.fields.push({key: 'emission', sortable: true});
      }
    }
  },
@@ -77,10 +83,11 @@ created () {
   methods:{
   onSubmit: function(){
         this.$store.dispatch('loadEmissions', this.form ).then(() => {
+        this.countryname = this.form.country
         this.clearCountry()
         })
       },
-  clearCountry () {
+   clearCountry () {
     this.form.country = ''
   },
   // get a list of countries from API
@@ -95,26 +102,40 @@ created () {
       },
   },
   computed: {
-  ...mapGetters(['emissions'])
+  ...mapGetters(['emissions', 'years', 'countryData'])
 }
 }
 </script>
 <style lang="scss" >
 
 .formcontainer{
+  padding-top: 15px;
+  height: 100%;
+  width: 100%;
+  max-width: 500px;
+  min-width: 100px;
+  display: inline-block;
+}
+.chartcontainer{
+  padding-top: 15px;
+  height: 100%;
+  width: 100%;
+  max-width: 570px;
+  min-width: 100px;
+  display: inline-block;
+
+}
+.bigcontainer{
   height: 100%;
   width: 100%;
   max-width: 800px;
   min-width: 100px;
   display: inline-block;
   border-radius: 5px;
-  // border-style: solid;
-  // border-width: 2px;
-  // border-color: black;
   margin-bottom: 1rem;
   padding: 12px 18px;
   box-shadow: 3px 3px 3px 6px rgba(black, 0.1);
-  background-color: rgba(white, 0.9);
+  background-color: rgba(white, 0.93);
 
 }
 </style>

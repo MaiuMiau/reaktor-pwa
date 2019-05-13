@@ -1,7 +1,6 @@
 <template>
   <div class="small">
     <line-chart :chart-data="datacollection"></line-chart>
-    <button @click="fillData()">Randomize</button>
   </div>
 </template>
 
@@ -19,30 +18,35 @@
         datacollection: {}
       }
     },
+    watch: {
+    propsdata: function () {
+      this.fillData()
+    }
+  },
     mounted () {
       this.fillData()
     },
     methods: {
       fillData () {
         this.datacollection = {
-          labels: this.propsdata2,
+          labels: this.propsdata,
           datasets: [
             {
               label: 'Co2 Emissions',
-              backgroundColor: '#a2bf6e',
-              data: this.propsdata
+              backgroundColor: '#abb5a4',
+              data: this.propsdata2
             }
           ]
         }
       },
-      
+
     }
   }
 </script>
 
 <style>
   .small {
-    max-width: 600px;
-    margin:  150px auto;
+    max-width: 750px;
+    margin:  10px auto;
   }
 </style>
