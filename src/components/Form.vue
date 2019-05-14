@@ -13,68 +13,46 @@
                </datalist>
             </div>
               <br>
+            <div>
+              <b-form-input placeholder="Enter or Search second Country" v-model="form.country2" list="my-list-id"></b-form-input>
+               <datalist id="my-list-id">
+                   <option v-for="country in options">{{ country  }}</option>
+               </datalist>
+            </div>
+              <br>
               <b-button type="submit" variant="dark">Get emissions</b-button>
-                <div class="mt-3" v-if="countryname != '' ">Results for: <h2>{{ countryname }}</h2></div>
-
-                <div id="check_capita" class="checkbox">
-                  <label><input type="checkbox" v-model="tableorchart" > Show results in chart</label>
-                </div>
           </b-form>
         <br>
         </div>
       </div>
-
-        <div class="bigcontainer" v-if="countryData !='' && tableorchart != true">
-          <div class="formcontainer">
-            <label><input type="checkbox" v-model="percapita" > Show results per capita</label>
-            <b-table bordered small responsive fixed hover :items="countryData" :fields="fields" ></b-table>
-          </div>
-        </div>
-        <div class="bigcontainer" v-if="countryData !='' && tableorchart == true">
-          <div class="chartcontainer">
-            <Bar v-bind:propsdata="years" v-bind:propsdata2="emissions" />
-          </div>
-        </div>
+            <Chart v-if="countryEmissions.country != null && showtableone " v-bind:yearsdata="years" v-bind:propsCountry1="countryEmissions" />
+            <Chart v-if="comparisonData[1] && showtabletwo " v-bind:yearsdata="years" v-bind:propsCountry1="comparisonData[0]" v-bind:propsCountry2="comparisonData[1]" />
     </b-container>
   </div>
 </template>
 
 
 <script>
-import Bar from './Bar.vue'
+import Chart from './Chart.vue'
 import { mapGetters } from 'vuex'
 import axios from 'axios';
 export default {
   name: 'Form',
   components: {
-    Bar
+    Chart
   },
   data () {
   return {
     form: {
       country: "",
+      country2: "",
     },
     options: [],
     selected: null,
-    fields: [{key: 'year', sortable: true}, {key: 'emission', sortable: true}],
-    percapita: null,
-    tableorchart: false,
-    countryname:""
+    showtableone: true,
+    showtabletwo: false
   }
 },
-// if checkbox is checked emissions will change to percapita
-watch: {
-   percapita: function () {
-     if (this.percapita == true) {
-       this.fields.pop()
-       this.fields.push({key: 'percapita', sortable: true});
-     }
-     else if (this.percapita == false){
-       this.fields.pop()
-       this.fields.push({key: 'emission', sortable: true});
-     }
-   }
- },
  // call loadCountries function to get options to form datalist
 created () {
   this.loadCountries()
@@ -82,15 +60,21 @@ created () {
   // when submitting the form, call loadEmissions function from store
   methods:{
   onSubmit: function(){
+    // if two countries are selected call compareEmissions
+    if(this.form.country2 != "" && this.form.country != "") {
+      this.$store.dispatch('compareEmissions', this.form ).then(()  => {
+        this.showtableone = false
+        this.showtabletwo = true
+      })
+    } else {
+      // if one country is selected call loadEmissions
         this.$store.dispatch('loadEmissions', this.form ).then(() => {
-        this.countryname = this.form.country
-        this.clearCountry()
+          this.showtabletwo = false
+          this.showtableone = true
         })
-      },
-   clearCountry () {
-    this.form.country = ''
-  },
-  // get a list of countries from API
+      }
+    },
+    // get a list of countries from API for datalist. Not done in store because gets done only once
   loadCountries() {
         axios.get('http://localhost:5000/getcountries')
           .then((res) => {
@@ -102,12 +86,11 @@ created () {
       },
   },
   computed: {
-  ...mapGetters(['emissions', 'years', 'countryData'])
+  ...mapGetters(['countryEmissions', 'years', 'comparisonData'])
 }
 }
 </script>
 <style lang="scss" >
-
 .formcontainer{
   padding-top: 15px;
   height: 100%;
@@ -123,7 +106,6 @@ created () {
   max-width: 570px;
   min-width: 100px;
   display: inline-block;
-
 }
 .bigcontainer{
   height: 100%;
@@ -136,6 +118,5 @@ created () {
   padding: 12px 18px;
   box-shadow: 3px 3px 3px 6px rgba(black, 0.1);
   background-color: rgba(white, 0.93);
-
 }
 </style>

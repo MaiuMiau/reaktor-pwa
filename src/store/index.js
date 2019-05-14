@@ -4,48 +4,61 @@ import axios from 'axios'
 
 
 Vue.use(Vuex)
-
-const SET_COUNTRY_DATA = 'SET_COUNTRY_DATA'
 const SET_YEARS = 'SET_YEARS '
-const SET_EMISSIONS = 'SET_EMISSIONS'
+const SET_COUNTRYEMISSIONS = 'SET_COUNTRYEMISSIONS'
+const SET_COMPARISONDATA= 'SET_COMPARISONDATA'
 
 const store = {
   state: function () {
     let baseState = {
-      emissions: {},
+      countryEmissions: {},
       years:[],
-      countryData:[]
+      comparisonData:[],
     }
     return baseState
   },
 
   mutations: {
-    [SET_COUNTRY_DATA]: (state, { countryData }) => {
-      state.countryData = countryData
-    },
+
     [SET_YEARS]: (state, { years }) => {
       state.years = years
     },
-    [SET_EMISSIONS]: (state, { emissions }) => {
-      state.emissions = emissions
+    [SET_COUNTRYEMISSIONS]: (state, { countryEmissions }) => {
+      state.countryEmissions = countryEmissions
+    },
+    [SET_COMPARISONDATA]: (state, { comparisonData }) => {
+      state.comparisonData = comparisonData
     }
 },
 
   actions: {
   loadEmissions ({ commit }, formData ) {
-    axios.post('http://localhost:5000/getemissions', formData ).then((response) => {
-      commit(SET_COUNTRY_DATA, {countryData:response.data.results})
-      commit(SET_YEARS, {years:response.data.years})
-      commit(SET_EMISSIONS, {emissions:response.data.emissons})
+    return new Promise((resolve, reject) => {
+      axios.post('http://localhost:5000/getemissions', formData ).then((response) => {
+        commit(SET_YEARS, {years:response.data.years})
+        commit(SET_COUNTRYEMISSIONS, {countryEmissions:response.data.result})
+        resolve()
+      }).catch((err) => {
+        reject(err)
+      })
     })
-  }
-
+  },
+  compareEmissions ({ commit }, formData ) {
+    return new Promise((resolve, reject) => {
+      axios.post('http://localhost:5000/emissionscompare', formData ).then((response) => {
+        commit(SET_YEARS, {years:response.data.years})
+        commit(SET_COMPARISONDATA, {comparisonData:response.data.results})
+        resolve()
+    }).catch((err) => {
+      reject(err)
+    })
+    })
+  },
 },
 getters: {
-  countryData: state => state.countryData,
   years: state => state.years,
-  emissions: state => state.emissions
-
+  countryEmissions: state => state.countryEmissions,
+  comparisonData: state => state.comparisonData
 
 }
 
