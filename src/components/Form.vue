@@ -22,11 +22,14 @@
               <br>
               <b-button type="submit" variant="dark">Get emissions</b-button>
           </b-form>
-        <br>
+              <br>
+         <label><input type="checkbox" v-model="percapita" > Show results per capita</label>
         </div>
       </div>
-            <Chart v-if="countryEmissions.country != null && showtableone " v-bind:yearsdata="years" v-bind:propsCountry1="countryEmissions" />
-            <Chart v-if="comparisonData[1] && showtabletwo " v-bind:yearsdata="years" v-bind:propsCountry1="comparisonData[0]" v-bind:propsCountry2="comparisonData[1]" />
+            <!-- chart is shown if only one country is selected -->
+            <Chart v-if="countryEmissions.country != null && showChartOne " v-bind:yearsdata="years" v-bind:propsCountry1="countryEmissions" />
+            <!-- chart is shown if two countries are selected -->
+            <Chart v-if="comparisonData[1] && showChartTwo " v-bind:yearsdata="years" v-bind:propsCountry1="comparisonData[0]" v-bind:propsCountry2="comparisonData[1]" />
     </b-container>
   </div>
 </template>
@@ -45,32 +48,65 @@ export default {
   return {
     form: {
       country: "",
-      country2: "",
+      country2: ""
     },
     options: [],
-    selected: null,
-    showtableone: true,
-    showtabletwo: false
+    showChartOne: true,
+    showChartTwo: false,
+    percapita: false
   }
 },
+watch: {
+  // if checkbox is checked emissions will change to percapita
+   percapita: function () {
+     if (this.percapita == true) {
+       // if two countries are selected call compareEmissions
+       if(this.form.country2 != "" && this.form.country != "") {
+         this.$store.dispatch('compareEmissions', {form:this.form, percapita: this.percapita} ).then(()  => {
+           this.showChartOne = false
+           this.showChartTwo = true
+         })
+       } else {
+         // if one country is selected call loadEmissions
+           this.$store.dispatch('loadEmissions', {form:this.form, percapita: this.percapita} ).then(() => {
+             this.showChartTwo = false
+             this.showChartOne = true
+           })
+         }
+     }
+     else if (this.percapita == false){
+       if(this.form.country2 != "" && this.form.country != "") {
+         this.$store.dispatch('compareEmissions', {form:this.form, percapita: this.percapita} ).then(()  => {
+           this.showChartOne = false
+           this.showChartTwo = true
+         })
+       } else {
+         // if one country is selected call loadEmissions
+           this.$store.dispatch('loadEmissions', {form:this.form, percapita: this.percapita} ).then(() => {
+             this.showChartTwo = false
+             this.showChartOne = true
+           })
+         }
+     }
+   }
+ },
  // call loadCountries function to get options to form datalist
 created () {
   this.loadCountries()
   },
-  // when submitting the form, call loadEmissions function from store
   methods:{
   onSubmit: function(){
     // if two countries are selected call compareEmissions
     if(this.form.country2 != "" && this.form.country != "") {
-      this.$store.dispatch('compareEmissions', this.form ).then(()  => {
-        this.showtableone = false
-        this.showtabletwo = true
+      this.$store.dispatch('compareEmissions', {form:this.form, percapita: this.percapita}  ).then(()  => {
+        this.showChartOne = false
+        this.showChartTwo = true
       })
     } else {
       // if one country is selected call loadEmissions
-        this.$store.dispatch('loadEmissions', this.form ).then(() => {
-          this.showtabletwo = false
-          this.showtableone = true
+        this.$store.dispatch('loadEmissions', {form:this.form, percapita: this.percapita} ).then(() => {
+          this.showChartTwo = false
+          this.showChartOne = true
         })
       }
     },
@@ -90,33 +126,3 @@ created () {
 }
 }
 </script>
-<style lang="scss" >
-.formcontainer{
-  padding-top: 15px;
-  height: 100%;
-  width: 100%;
-  max-width: 500px;
-  min-width: 100px;
-  display: inline-block;
-}
-.chartcontainer{
-  padding-top: 15px;
-  height: 100%;
-  width: 100%;
-  max-width: 570px;
-  min-width: 100px;
-  display: inline-block;
-}
-.bigcontainer{
-  height: 100%;
-  width: 100%;
-  max-width: 800px;
-  min-width: 100px;
-  display: inline-block;
-  border-radius: 5px;
-  margin-bottom: 1rem;
-  padding: 12px 18px;
-  box-shadow: 3px 3px 3px 6px rgba(black, 0.1);
-  background-color: rgba(white, 0.93);
-}
-</style>

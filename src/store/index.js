@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
 
-
 Vue.use(Vuex)
 const SET_YEARS = 'SET_YEARS '
 const SET_COUNTRYEMISSIONS = 'SET_COUNTRYEMISSIONS'
@@ -17,9 +16,7 @@ const store = {
     }
     return baseState
   },
-
   mutations: {
-
     [SET_YEARS]: (state, { years }) => {
       state.years = years
     },
@@ -30,7 +27,6 @@ const store = {
       state.comparisonData = comparisonData
     }
 },
-
   actions: {
   loadEmissions ({ commit }, formData ) {
     return new Promise((resolve, reject) => {
@@ -59,9 +55,6 @@ getters: {
   years: state => state.years,
   countryEmissions: state => state.countryEmissions,
   comparisonData: state => state.comparisonData
-
 }
-
-
 }
 export default new Vuex.Store(store)

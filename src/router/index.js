@@ -1,8 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import Chart from '@/components/Chart'
 import Form from '@/components/Form'
-import store from '../store/'
 
 Vue.use(Router)
 
@@ -14,9 +13,14 @@ export default new Router({
       component: Form
     },
     {
-      path: '/emissions',
-      name: 'Form',
-      component: Form
-    }
-  ]
-})
+      path: '/emissionschart',
+      name: 'Chart',
+      component: Chart
+    },
+    {
+      path: '*',
+      redirect: '/'
+    },
+  ],
+  mode: 'history',
+});

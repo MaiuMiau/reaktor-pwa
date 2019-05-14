@@ -1,9 +1,10 @@
 <template>
   <div class="bigcontainer">
-    <div class="chartcontainer">
-      <div class="small">
-        <line-chart :chart-data="datacollection"></line-chart>
-      </div>
+    <p>Co2 Emissions in kilotons</p>
+      <div class="chartcontainer">
+        <div class="small">
+          <line-chart :chart-data="datacollection"></line-chart>
+        </div>
     </div>
   </div>
 </template>
@@ -12,7 +13,7 @@
   import LineChart from './LineChart.js'
   export default {
     name: 'Chart',
-    props:['yearsdata', 'propsCountry1','propsCountry2'],
+    props:['yearsdata', 'propsCountry1', 'propsCountry2'],
     components: {
       LineChart
     },
@@ -21,6 +22,7 @@
         datacollection: {}
       }
     },
+    // watches if values will change and calls fillData() function
     watch: {
     propsCountry1: function () {
       this.fillData()
@@ -34,6 +36,7 @@
      },
     methods: {
       fillData () {
+        // if two countries are selected
         if(this.propsCountry2 != null && this.propsCountry1 != null){
           this.datacollection = {
             labels: this.yearsdata,
@@ -52,6 +55,7 @@
             ]
           }
         }else {
+          // if one country is selected
           this.datacollection = {
             labels: this.yearsdata,
             datasets: [
@@ -67,40 +71,3 @@
     }
   }
 </script>
-<style lang="scss" >
-
-.formcontainer{
-  padding-top: 15px;
-  height: 100%;
-  width: 100%;
-  max-width: 500px;
-  min-width: 100px;
-  display: inline-block;
-}
-.chartcontainer{
-  padding-top: 15px;
-  height: 100%;
-  width: 100%;
-  max-width: 570px;
-  min-width: 100px;
-  display: inline-block;
-
-}
-.bigcontainer{
-  height: 100%;
-  width: 100%;
-  max-width: 800px;
-  min-width: 100px;
-  display: inline-block;
-  border-radius: 5px;
-  margin-bottom: 1rem;
-  padding: 12px 18px;
-  box-shadow: 3px 3px 3px 6px rgba(black, 0.1);
-  background-color: rgba(white, 0.93);
-
-}
-  .small {
-    max-width: 750px;
-    margin:  10px auto;
-  }
-</style>
